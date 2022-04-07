@@ -8,6 +8,7 @@ import matplotlib.pyplot as plt
 from IPython.display import set_matplotlib_formats
 from enum import Enum
 import math
+import sklearn
 
 def setup_environment():
     '''
@@ -351,6 +352,19 @@ def bilinear_eval(p, x):
     '''
     return np.maximum(p[2], p[0]*x + p[1])
 
+def linear_regression(x, y, w=None):
+    '''
+        Perform a linear regression
+    :param x: x values
+    :param y: y values
+    :param w: weights
+    :return: an array containing the slope and intercept
+    '''
+    x_values = [[el] for el in x]
+    regression =sklearn.linear_model.LinearRegression()
+    result = regression.fit(x_values, y, sample_weight=w)
+    return np.append(result.coef_, result.intercept_)
+
 def bilinear_fit(x_offset, x_data, y_data):
     '''
         Simple way of doing the fit : 
@@ -377,7 +391,7 @@ def bilinear_fit(x_offset, x_data, y_data):
         y_offset_data += y_subset
         p = [0., 0., np.mean(y_offset_data)]
     else:
-        p = np.polyfit(x_subset, y_subset, 1, w=weights_sub)
+        p = linear_regression(x_subset, y_subset, weights_sub)
         # the y offset is the mean of the data < x_offset
         p = np.append(p, np.mean(y_offset_data))
         
