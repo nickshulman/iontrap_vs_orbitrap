@@ -20,6 +20,7 @@ class TestCalculateLoq(unittest.TestCase):
         self.assertAlmostEqual(0.16317916521766687, intercept)
         self.assertAlmostEqual(0.172315, baseline_height)
         self.assertAlmostEqual(0.057632885215053185, result['error'])
+        self.assertAlmostEqual(0.0008070195509128315, result['baseline_std'])
 
     def test_bilinear_fit(self):
         unique_concentrations, mean_areas = calc_loq.get_unique_conc_and_mean_areas(self.concentrations, self.areas)
@@ -43,3 +44,9 @@ class TestCalculateLoq(unittest.TestCase):
 
     def test_compute_bootstrapped_loq(self):
         result = calc_loq.compute_quantitative_limits(self.concentrations, self.areas, self.config)
+
+    def test_compute_lod(self):
+        best_fit = calc_loq.fit_conc_vs_area(self.concentrations, self.areas)
+        unique_concentrations, mean_areas = calc_loq.get_unique_conc_and_mean_areas(self.concentrations, self.areas)
+        result = calc_loq.compute_lod(best_fit, unique_concentrations)
+        self.assertAlmostEqual(0.3845768874492954, result)
